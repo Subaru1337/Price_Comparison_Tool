@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Comparison</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .search-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .price-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .price-card:hover {
+            transform: translateY(-5px);
+        }
+        .amazon-card {
+            border-left: 5px solid #ff9900;
+        }
+        .flipkart-card {
+            border-left: 5px solid #2874f0;
+        }
+        .ebay-card {
+            border-left: 5px solid #e53238;
+        }
+        .logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            border-radius: 25px;
+            padding: 12px 25px;
+            font-size: 16px;
+            border: 2px solid #eee;
+            transition: all 0.3s;
+        }
+        .search-input:focus {
+            border-color: #2874f0;
+            box-shadow: 0 0 0 0.2rem rgba(40,116,240,0.25);
+        }
+        .search-btn {
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-size: 16px;
+            background: #2874f0;
+            border: none;
+            transition: all 0.3s;
+        }
+        .search-btn:hover {
+            background: #1a5dc9;
+            transform: translateY(-2px);
+        }
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #212529;
+        }
+        .store-name {
+            color: #6c757d;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        .product-link {
+            color: #2874f0;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            margin-top: 5px;
+        }
+        .product-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="search-container">
+            <div class="text-center mb-4">
+                <h1 class="mb-3">Price Comparison</h1>
+                <p class="text-muted">Compare prices across Amazon, Flipkart, and eBay</p>
+            </div>
+            
+            <form action="/compare" method="POST" id="search-form">
+                <div class="input-group mb-4">
+                    <input type="text" name="product_name" class="form-control search-input" 
+                           placeholder="Enter product name..." required>
+                    <button type="submit" class="btn btn-primary search-btn">
+                        Search
+                    </button>
+                </div>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Searching for the best prices...</p>
+            </div>
+
+            {% if amazon_price or flipkart_price or ebay_price %}
+            <div class="results">
+                {% if amazon_price %}
+                <div class="price-card amazon-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="store-name">Amazon</div>
+                            <div class="price">{{ amazon_price }}</div>
+                            {% if amazon_link %}
+                            <a href="{{ amazon_link }}" target="_blank" class="product-link">View on Amazon</a>
+                            {% endif %}
+                        </div>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" 
+                             alt="Amazon" class="logo">
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if flipkart_price %}
+                <div class="price-card flipkart-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="store-name">Flipkart</div>
+                            <div class="price">{{ flipkart_price }}</div>
+                            {% if flipkart_link %}
+                            <a href="{{ flipkart_link }}" target="_blank" class="product-link">View on Flipkart</a>
+                            {% endif %}
+                        </div>
+                        <img src="https://images.ctfassets.net/drk57q8lctrm/4QgGDTtQYDx6oDaW3aU7KS/34163f3bef6d82fd354a7455d07102eb/flipkart-logo.webp" 
+                             alt="Flipkart" class="logo">
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if ebay_price %}
+                <div class="price-card ebay-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="store-name">eBay</div>
+                            <div class="price">{{ ebay_price }}</div>
+                            {% if ebay_link %}
+                            <a href="{{ ebay_link }}" target="_blank" class="product-link">View on eBay</a>
+                            {% endif %}
+                        </div>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/EBay_logo.svg" 
+                             alt="eBay" class="logo">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('search-form').addEventListener('submit', function() {
+            document.getElementById('loading').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

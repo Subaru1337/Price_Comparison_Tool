@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 
 # Replace this with your actual ScraperAPI key
-SCRAPER_API_KEY = 'db809623cf3dce8f5c8ca4cdf597d800'
+SCRAPER_API_KEY = 'YOUR_API_KEY'
 
 def is_valid_title(title, search_term):
     # Convert to lowercase for case-insensitive comparison
